@@ -9,7 +9,7 @@ export default function Header() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="bg-gradient-to-r from-purple-400 to-purple-600 text-white py-12"
+      className="bg-gradient-to-r from-purple-400 to-purple-600 text-white py-8 sm:py-12"
     >
       <div className="container mx-auto px-4 text-center">
         <motion.div
@@ -19,7 +19,7 @@ export default function Header() {
           className="mb-4"
         >
           <div className="mb-4">
-            <h1 className="text-5xl md:text-6xl font-bold text-white">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
               Muffin and Bug
             </h1>
           </div>
@@ -30,18 +30,18 @@ export default function Header() {
             className="flex justify-center mb-4"
           >
             <img
-              src="/muffin.jpeg"
-              alt="Muffin"
-              className="h-80 object-cover border-4 border-white shadow-lg"
+              src="/header2.jpg"
+              alt="The-Fam"
+              className="h-48 sm:h-64 md:h-80 w-auto object-cover border-2 sm:border-4 border-white shadow-lg rounded-lg sm:rounded-xl"
             />
           </motion.div>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-2xl md:text-2xl text-purple-100 font-light italic mb-6"
+            className="text-lg sm:text-xl md:text-2xl text-purple-100 font-light italic mb-4 sm:mb-6 px-4"
           >
-            A diary of a girl dad raising two wonderful daughters
+            A diary of a girl dad raising two wonderful daughters with a wonderful wife
           </motion.p>
           
           <motion.div
@@ -50,9 +50,7 @@ export default function Header() {
             transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
             className="flex items-center justify-center gap-2 text-purple-200"
           >
-            
-            <span className="text-sm">Capturing moments, creating memories</span>
-            
+            <span className="text-xs sm:text-sm text-center px-4">Capturing moments, creating memories</span>
           </motion.div>
         </motion.div>
       </div>
