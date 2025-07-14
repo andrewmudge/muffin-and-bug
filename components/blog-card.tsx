@@ -56,8 +56,8 @@ export default function BlogCard({ post, onEdit, isEditing, onCancelEdit, onPost
         <div className="p-4 sm:p-6 md:p-8 relative">
           {/* Floating Image in top-right with text wrapping */}
           {post.image && (
-            <div className="float-right ml-4 mb-4 lg:ml-6 lg:mb-6">
-              <div className="relative h-[400px] w-auto rounded-xl overflow-hidden">
+            <div className="float-right ml-4 mb-4 lg:ml-6 lg:mb-6 w-[200px] sm:w-[250px] md:w-[300px]">
+              <div className="relative w-full h-[250px] sm:h-[300px] md:h-[400px] rounded-xl overflow-hidden">
                 {post.featured && (
                   <motion.div
                     initial={{ scale: 0 }}
@@ -85,9 +85,8 @@ export default function BlogCard({ post, onEdit, isEditing, onCancelEdit, onPost
                 <Image
                   src={post.image}
                   alt={post.title}
-                  width={300}
-                  height={400}
-                  className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                  fill
+                  className="object-cover transition-transform duration-300 hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>

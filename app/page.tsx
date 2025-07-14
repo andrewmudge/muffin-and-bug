@@ -25,12 +25,6 @@ export default function Home() {
 
   const isAdmin = session?.user?.role === 'admin';
 
-  // Debug session state
-  console.log('Session status:', status);
-  console.log('Session data:', session);
-  console.log('User role:', session?.user?.role);
-  console.log('Is admin:', isAdmin);
-
   // Fetch posts from API
   useEffect(() => {
     fetchPosts();

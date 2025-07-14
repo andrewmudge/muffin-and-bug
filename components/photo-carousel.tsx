@@ -118,14 +118,14 @@ export default function PhotoCarousel({ images, title, isCollapsed = false }: Ph
             {/* Thumbnail Navigation */}
             {images.length > 1 && (
               <div className="p-4 bg-gray-50">
-                <div className="flex gap-2 overflow-x-auto pb-2">
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 max-w-full">
                   {images.map((image, index) => (
                     <motion.button
                       key={index}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setCurrentIndex(index)}
-                      className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                      className={`relative w-full aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                         index === currentIndex
                           ? 'border-purple-500 shadow-lg'
                           : 'border-gray-200 hover:border-purple-300'
@@ -134,9 +134,8 @@ export default function PhotoCarousel({ images, title, isCollapsed = false }: Ph
                       <Image
                         src={image}
                         alt={`Thumbnail ${index + 1}`}
-                        width={64}
-                        height={64}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                       {index === currentIndex && (
                         <div className="absolute inset-0 bg-purple-500/20"></div>
@@ -152,21 +151,20 @@ export default function PhotoCarousel({ images, title, isCollapsed = false }: Ph
         {/* Thumbnail Only View - Show when collapsed */}
         {isCollapsed && (
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden p-4">
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 max-w-full">
               {images.map((image, index) => (
                 <motion.button
                   key={index}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => openLightbox(index)}
-                  className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-purple-300 transition-all duration-200"
+                  className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-purple-300 transition-all duration-200"
                 >
                   <Image
                     src={image}
                     alt={`Thumbnail ${index + 1}`}
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                   <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-200 flex items-center justify-center opacity-0 hover:opacity-100">
                     <ZoomIn className="w-4 h-4 text-white" />
