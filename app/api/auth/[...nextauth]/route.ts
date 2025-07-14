@@ -18,7 +18,12 @@ console.log('ADMIN_PASSWORD_HASH length:', process.env.ADMIN_PASSWORD_HASH?.leng
 console.log('=== END DEBUG ===');
 
 // Explicitly set the secret with fallbacks
-const secret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || '750ba3f7aa4554926143b72bbe48e314511a31d91ad78864abe07df190f2270a';
+const secret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+
+if (!secret) {
+  console.error('CRITICAL: No NextAuth secret found in environment variables');
+  throw new Error('NextAuth secret is required but not found in environment variables');
+}
 
 console.log('Using secret:', secret ? 'SECRET_EXISTS' : 'NO_SECRET');
 
@@ -38,8 +43,13 @@ const handler = NextAuth({
           return null;
         }
 
-        const adminEmail = process.env.ADMIN_EMAIL || 'mudge.andrew@gmail.com';
-        const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH || '$2b$12$.K8Z1IocZSIQgmQN7OYfD.9RI2sAbDNLhIDL7l1DuLdd.OfX6/.Wi';
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+
+        if (!adminEmail || !adminPasswordHash) {
+          console.error('CRITICAL: Admin credentials not found in environment variables');
+          return null;
+        }
 
         console.log('Checking credentials for:', credentials.email);
         console.log('Admin email:', adminEmail);

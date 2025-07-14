@@ -1,12 +1,21 @@
-// Environment configuration with fallbacks
+// Environment configuration - all values must come from environment variables
 export const env = {
-  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || '750ba3f7aa4554926143b72bbe48e314511a31d91ad78864abe07df190f2270a',
-  NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'https://main.dtxq3d0owqh57.amplifyapp.com',
-  ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'mudge.andrew@gmail.com',
-  ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH || '$2b$12$.K8Z1IocZSIQgmQN7OYfD.9RI2sAbDNLhIDL7l1DuLdd.OfX6/.Wi',
+  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+  ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH,
 };
 
-// Debug logging
+// Validate critical environment variables
+const requiredEnvVars = ['NEXTAUTH_SECRET', 'ADMIN_EMAIL', 'ADMIN_PASSWORD_HASH'];
+const missingVars = requiredEnvVars.filter(varName => !env[varName as keyof typeof env]);
+
+if (missingVars.length > 0) {
+  console.error('CRITICAL: Missing required environment variables:', missingVars);
+  throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+}
+
+// Debug logging (safe - no actual values)
 console.log('Environment configuration loaded:', {
   NEXTAUTH_SECRET: env.NEXTAUTH_SECRET ? 'SET' : 'MISSING',
   NEXTAUTH_URL: env.NEXTAUTH_URL ? 'SET' : 'MISSING',
