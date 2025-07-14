@@ -28,6 +28,10 @@ yarn-error.log*
 .env
 .env*.local
 
+# security - password debugging scripts
+/scripts/debug-password.js
+/scripts/test-password.js
+
 # vercel
 .vercel
 
