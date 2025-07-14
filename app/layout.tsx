@@ -1,7 +1,7 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
-import { Providers } from './providers.tsx';
+import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 const playfair = Playfair_Display({ subsets: ['latin'] });
