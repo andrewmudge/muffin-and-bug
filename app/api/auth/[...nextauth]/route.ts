@@ -47,7 +47,7 @@ const handler = NextAuth({
                 id: '1',
                 email: adminEmail,
                 name: 'Admin',
-                role: 'admin' // Add this line
+                role: 'admin'
               };
             } else {
               console.log('Password validation failed');
@@ -70,7 +70,23 @@ const handler = NextAuth({
   pages: {
     signIn: '/auth/signin'
   },
-  debug: true
+  debug: true,
+  callbacks: {
+    async jwt({ token, user }) {
+      console.log('JWT callback - token:', token, 'user:', user);
+      if (user) {
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      console.log('Session callback - session:', session, 'token:', token);
+      if (token) {
+        session.user.role = token.role;
+      }
+      return session;
+    }
+  }
 });
 
 export { handler as GET, handler as POST };
