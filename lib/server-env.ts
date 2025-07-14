@@ -24,7 +24,7 @@ function loadServerEnv() {
       return serverEnv;
     }
   } catch (error) {
-    console.log('❌ Failed to load server-env.json:', error.message);
+    console.log('❌ Failed to load server-env.json:', error instanceof Error ? error.message : String(error));
   }
   
   // 3. Try runtime config from Next.js
@@ -36,7 +36,7 @@ function loadServerEnv() {
       return config.serverRuntimeConfig;
     }
   } catch (error) {
-    console.log('❌ Failed to load Next.js runtime config:', error.message);
+    console.log('❌ Failed to load Next.js runtime config:', error instanceof Error ? error.message : String(error));
   }
   
   // 4. Final fallback - return empty object
