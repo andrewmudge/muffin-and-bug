@@ -4,19 +4,28 @@ frontend:
     preBuild:
       commands:
         - npm ci --cache .npm --prefer-offline
-        - 'echo "Pre-build environment check..."'
+        - 'echo "=== PRE-BUILD ENVIRONMENT CHECK ==="'
+        - 'echo "NODE_ENV: $NODE_ENV"'
         - 'echo "NEXTAUTH_SECRET exists: ${NEXTAUTH_SECRET:+true}"'
         - 'echo "ADMIN_EMAIL exists: ${ADMIN_EMAIL:+true}"'
         - 'echo "ADMIN_PASSWORD_HASH exists: ${ADMIN_PASSWORD_HASH:+true}"'
+        - 'echo "AWS_AMPLIFY_DEPLOYMENT_ID: $AWS_AMPLIFY_DEPLOYMENT_ID"'
+        - node scripts/check-env.js
+        - 'echo "=== END PRE-BUILD CHECK ==="'
     build:
       commands:
-        - 'echo "Building with environment variables..."'
+        - 'echo "=== BUILD ENVIRONMENT CHECK ==="'
+        - 'echo "NODE_ENV: $NODE_ENV"'
         - 'echo "NEXTAUTH_SECRET exists: ${NEXTAUTH_SECRET:+true}"'
         - 'echo "ADMIN_EMAIL exists: ${ADMIN_EMAIL:+true}"'
         - 'echo "ADMIN_PASSWORD_HASH exists: ${ADMIN_PASSWORD_HASH:+true}"'
+        - 'echo "Running Amplify environment loader..."'
+        - node scripts/amplify-env-loader.js
+        - 'echo "Building Next.js application..."'
         - npm run build
         - 'echo "Build completed, checking .next directory..."'
         - ls -la .next/
+        - 'echo "=== END BUILD CHECK ==="'
   artifacts:
     baseDirectory: .next
     files:

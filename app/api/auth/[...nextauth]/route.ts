@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
+import { serverEnv } from '@/lib/server-env';
 
 // Debug all environment variables
 console.log('=== ENVIRONMENT VARIABLES DEBUG ===');
@@ -17,15 +18,11 @@ console.log('ADMIN_PASSWORD_HASH exists:', !!process.env.ADMIN_PASSWORD_HASH);
 console.log('ADMIN_PASSWORD_HASH length:', process.env.ADMIN_PASSWORD_HASH?.length);
 console.log('=== END DEBUG ===');
 
-// Explicitly set the secret with fallbacks
-const secret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
-
-if (!secret) {
-  console.error('CRITICAL: No NextAuth secret found in environment variables');
-  throw new Error('NextAuth secret is required but not found in environment variables');
-}
-
-console.log('Using secret:', secret ? 'SECRET_EXISTS' : 'NO_SECRET');
+// Use server environment configuration
+console.log('Using server environment configuration...');
+console.log('Server env NEXTAUTH_SECRET exists:', !!serverEnv.NEXTAUTH_SECRET);
+console.log('Server env ADMIN_EMAIL exists:', !!serverEnv.ADMIN_EMAIL);
+console.log('Server env ADMIN_PASSWORD_HASH exists:', !!serverEnv.ADMIN_PASSWORD_HASH);
 
 const handler = NextAuth({
   providers: [
@@ -43,11 +40,11 @@ const handler = NextAuth({
           return null;
         }
 
-        const adminEmail = process.env.ADMIN_EMAIL;
-        const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+        const adminEmail = serverEnv.ADMIN_EMAIL;
+        const adminPasswordHash = serverEnv.ADMIN_PASSWORD_HASH;
 
         if (!adminEmail || !adminPasswordHash) {
-          console.error('CRITICAL: Admin credentials not found in environment variables');
+          console.error('CRITICAL: Admin credentials not found in server environment');
           return null;
         }
 
@@ -79,7 +76,7 @@ const handler = NextAuth({
       }
     })
   ],
-  secret: secret,
+  secret: serverEnv.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt'
   },
