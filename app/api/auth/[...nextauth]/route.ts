@@ -46,7 +46,8 @@ const handler = NextAuth({
               return {
                 id: '1',
                 email: adminEmail,
-                name: 'Admin'
+                name: 'Admin',
+                role: 'admin' // Add this line
               };
             } else {
               console.log('Password validation failed');
