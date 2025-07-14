@@ -9,6 +9,10 @@ const playfair = Playfair_Display({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Muffin and Bug - A Girl Dad\'s Journey',
   description: 'A diary of a girl dad raising two wonderful daughters',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export const viewport: Viewport = {

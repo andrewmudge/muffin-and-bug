@@ -31,7 +31,7 @@ export default function SignIn() {
       } else {
         // Refresh the session and redirect
         await getSession();
-        router.push('/');
+        router.push('/admin');
         router.refresh();
       }
     } catch (err) {
