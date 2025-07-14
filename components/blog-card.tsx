@@ -47,8 +47,10 @@ export default function BlogCard({ post, onEdit, isEditing, onCancelEdit, onPost
       <motion.article
         whileHover={{ y: -5 }}
         transition={{ duration: 0.2 }}
-        className={`bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 ${
-          post.featured ? 'ring-2 ring-purple-200' : ''
+        className={`bg-white rounded-2xl shadow-lg overflow-hidden border hover:shadow-xl transition-all duration-300 ${
+          post.featured 
+            ? 'ring-2 ring-purple-200 border-purple-200 bg-gradient-to-br from-purple-50/50 to-white' 
+            : 'border-gray-100'
         }`}
       >
         <div className="p-4 sm:p-6 md:p-8 relative">
@@ -121,10 +123,12 @@ export default function BlogCard({ post, onEdit, isEditing, onCancelEdit, onPost
               {post.title}
             </h2>
             
-            {/* Excerpt */}
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              {post.excerpt}
-            </p>
+            {/* Excerpt - only show if exists */}
+            {post.excerpt && post.excerpt.trim() && (
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                {post.excerpt}
+              </p>
+            )}
 
             {/* Full content */}
             <div className="prose prose-lg max-w-none mb-6 text-gray-700 leading-relaxed">

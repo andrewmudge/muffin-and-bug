@@ -5,13 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { blogService } from '@/lib/blog-service';
-import { Plus, Upload, X, Trash2, CalendarIcon } from 'lucide-react';
+import { Plus, Upload, X, Trash2 } from 'lucide-react';
 import { BlogPost } from '@/types/blog';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 interface CreatePostFormProps {
   onPostCreated?: () => void;
@@ -306,38 +303,88 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
             <label className="block text-sm font-medium mb-1">
               Post Date *
             </label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.date ? format(formData.date, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={formData.date}
-                  onSelect={(date) => setFormData(prev => ({ ...prev, date: date || new Date() }))}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="relative">
+              <Input
+                type="text"
+                value={formData.date ? format(formData.date, 'yyyy-MM-dd') : ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  
+                  // Allow any input while typing
+                  if (value === '') {
+                    setFormData(prev => ({ ...prev, date: new Date() }));
+                    return;
+                  }
+                  
+                  // Only validate and update if it looks like a complete date
+                  if (value.length === 10 && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    const selectedDate = new Date(value);
+                    if (!isNaN(selectedDate.getTime())) {
+                      setFormData(prev => ({ ...prev, date: selectedDate }));
+                    }
+                  }
+                  // Allow partial typing without updating the date state
+                }}
+                onBlur={(e) => {
+                  // On blur, validate and correct if needed
+                  const value = e.target.value;
+                  if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    const selectedDate = new Date(value);
+                    if (!isNaN(selectedDate.getTime())) {
+                      setFormData(prev => ({ ...prev, date: selectedDate }));
+                    } else {
+                      // Reset to current date if invalid
+                      e.target.value = format(formData.date, 'yyyy-MM-dd');
+                    }
+                  } else if (value === '') {
+                    setFormData(prev => ({ ...prev, date: new Date() }));
+                  } else {
+                    // Reset to current date if invalid format
+                    e.target.value = format(formData.date, 'yyyy-MM-dd');
+                  }
+                }}
+                required
+                placeholder="YYYY-MM-DD (e.g., 2025-07-14)"
+                className="w-full"
+              />
+              <input
+                type="date"
+                value={formData.date ? format(formData.date, 'yyyy-MM-dd') : ''}
+                onChange={(e) => {
+                  const selectedDate = e.target.value ? new Date(e.target.value) : new Date();
+                  setFormData(prev => ({ ...prev, date: selectedDate }));
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                style={{ pointerEvents: 'none' }}
+              />
+              <div 
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600"
+                onClick={() => {
+                  const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement;
+                  if (dateInput) {
+                    dateInput.style.pointerEvents = 'auto';
+                    dateInput.showPicker?.();
+                    setTimeout(() => {
+                      dateInput.style.pointerEvents = 'none';
+                    }, 100);
+                  }
+                }}
+              >
+                📅
+              </div>
+            </div>
           </div>
 
           <div>
             <label htmlFor="excerpt" className="block text-sm font-medium mb-1">
-              Excerpt *
+              Excerpt
             </label>
             <Textarea
               id="excerpt"
               name="excerpt"
               value={formData.excerpt}
               onChange={handleInputChange}
-              required
-              placeholder="Brief description of the post"
+              placeholder="Brief description of the post (optional)"
               rows={2}
             />
           </div>

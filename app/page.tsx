@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Calendar, Heart, Camera, Star } from 'lucide-react';
+import { Search, Calendar, Heart, Camera, Star, LogIn, LogOut } from 'lucide-react';
 import { format, parseISO, getYear } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import { BlogPost } from '@/types/blog';
 import { blogService } from '@/lib/blog-service';
 import BlogCard from '@/components/blog-card';
@@ -13,6 +14,7 @@ import Header from '@/components/header';
 import CreatePostForm from '@/components/create-post-form';
 
 export default function Home() {
+  const { data: session, status } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -20,6 +22,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
+
+  const isAdmin = session?.user?.role === 'admin';
 
   // Fetch posts from API
   useEffect(() => {
@@ -73,7 +77,15 @@ export default function Home() {
       filtered = filtered.filter(post => getYear(parseISO(post.date)) === selectedYear);
     }
 
-    return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Sort posts: featured posts first, then by date (newest first)
+    return filtered.sort((a, b) => {
+      // If one is featured and the other is not, featured comes first
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      
+      // If both are featured or both are not featured, sort by date
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
   }, [posts, searchTerm, selectedYear]);
 
   // Get unique years from posts
@@ -102,7 +114,37 @@ export default function Home() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 max-w-7xl">
         {/* Search and Navigation Section */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-white/20">
-          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div className="flex-1">
+              <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+            </div>
+            
+            {/* Admin Controls */}
+            <div className="flex items-center gap-2">
+              {isAdmin ? (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => signOut()}
+                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </motion.button>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => signIn()}
+                  className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Admin
+                </motion.button>
+              )}
+            </div>
+          </div>
+          
           <YearNavigation 
             years={availableYears} 
             selectedYear={selectedYear} 
@@ -110,8 +152,8 @@ export default function Home() {
           />
         </div>
 
-        {/* Create Post Form - Only show when not editing an existing post */}
-        {!editingPostId && (
+        {/* Create Post Form - Only show to admin when not editing an existing post */}
+        {isAdmin && !editingPostId && (
           <div className="mb-6 sm:mb-8">
             <CreatePostForm 
               onPostCreated={fetchPosts} 
@@ -192,7 +234,7 @@ export default function Home() {
                         >
                           <BlogCard 
                             post={post} 
-                            onEdit={handleEditPost}
+                            onEdit={isAdmin ? handleEditPost : undefined}
                             isEditing={editingPostId === post.id}
                             onCancelEdit={handleCancelEdit}
                             onPostUpdated={handlePostUpdated}

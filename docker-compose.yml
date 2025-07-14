@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  blog-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=https://j74hf4x2ab.execute-api.us-east-1.amazonaws.com/prod
+      - NEXT_PUBLIC_S3_BUCKET=muffin-and-bug-images-122610511543
+      - NEXT_PUBLIC_CLOUDFRONT_URL=https://d2ly4zque2pcbe.cloudfront.net
+      - NEXT_PUBLIC_AWS_REGION=us-east-1
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=muffin-and-bug-super-secret-key-change-in-production
+      - ADMIN_EMAIL=mudge.andrew@gmail.com
+      - ADMIN_PASSWORD_HASH=$$2b$$12$$7U6.g9kXvWfCwEZ5yrXa0uUOV4hlNKlbuB/Y1yiqBnZFn6t6YzRlO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

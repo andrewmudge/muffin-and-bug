@@ -1,0 +1,72 @@
+{
+  "family": "muffin-and-bug-blog",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "blog-app",
+      "image": "ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/muffin-and-bug-blog:latest",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NEXT_PUBLIC_API_URL",
+          "value": "https://j74hf4x2ab.execute-api.us-east-1.amazonaws.com/prod"
+        },
+        {
+          "name": "NEXT_PUBLIC_S3_BUCKET",
+          "value": "muffin-and-bug-images-122610511543"
+        },
+        {
+          "name": "NEXT_PUBLIC_CLOUDFRONT_URL",
+          "value": "https://d2ly4zque2pcbe.cloudfront.net"
+        },
+        {
+          "name": "NEXT_PUBLIC_AWS_REGION",
+          "value": "us-east-1"
+        },
+        {
+          "name": "NEXTAUTH_URL",
+          "value": "https://your-domain.com"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "NEXTAUTH_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT_ID:secret:blog-secrets:NEXTAUTH_SECRET::"
+        },
+        {
+          "name": "ADMIN_EMAIL",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT_ID:secret:blog-secrets:ADMIN_EMAIL::"
+        },
+        {
+          "name": "ADMIN_PASSWORD_HASH",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT_ID:secret:blog-secrets:ADMIN_PASSWORD_HASH::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/muffin-and-bug-blog",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}
