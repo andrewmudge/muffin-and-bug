@@ -28,6 +28,7 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
     featured: false,
     date: new Date() // Add date field with today as default
   });
+  const [dateInputValue, setDateInputValue] = useState(''); // Separate state for text input
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -39,6 +40,7 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
   // Effect to populate form when editing
   useEffect(() => {
     if (editingPost) {
+      const postDate = editingPost.date ? new Date(editingPost.date) : new Date();
       setFormData({
         title: editingPost.title || '',
         content: editingPost.content || '',
@@ -48,11 +50,13 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
         image: editingPost.image || '',
         gallery: editingPost.gallery || [],
         featured: editingPost.featured || false,
-        date: editingPost.date ? new Date(editingPost.date) : new Date()
+        date: postDate
       });
+      setDateInputValue(format(postDate, 'yyyy-MM-dd'));
       setShowForm(true);
     } else {
       // Reset form when not editing
+      const newDate = new Date();
       setFormData({
         title: '',
         content: '',
@@ -62,8 +66,9 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
         image: '',
         gallery: [],
         featured: false,
-        date: new Date()
+        date: newDate
       });
+      setDateInputValue(format(newDate, 'yyyy-MM-dd'));
     }
   }, [editingPost]);
 
@@ -149,6 +154,7 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
       }
       
       // Reset form
+      const newDate = new Date();
       setFormData({
         title: '',
         content: '',
@@ -158,8 +164,9 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
         image: '',
         gallery: [],
         featured: false,
-        date: new Date()
+        date: newDate
       });
+      setDateInputValue(format(newDate, 'yyyy-MM-dd'));
       
       setShowForm(false);
       onPostCreated?.();
@@ -188,6 +195,7 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
       alert('Post deleted successfully!');
       
       // Reset form and close
+      const newDate = new Date();
       setFormData({
         title: '',
         content: '',
@@ -197,8 +205,9 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
         image: '',
         gallery: [],
         featured: false,
-        date: new Date()
+        date: newDate
       });
+      setDateInputValue(format(newDate, 'yyyy-MM-dd'));
       
       setShowForm(false);
       onPostCreated?.(); // Refresh the post list
@@ -303,49 +312,46 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
             <label className="block text-sm font-medium mb-1">
               Post Date *
             </label>
-            <div className="relative">
+            <div className="flex space-x-2">
               <Input
                 type="text"
-                value={formData.date ? format(formData.date, 'yyyy-MM-dd') : ''}
+                value={dateInputValue}
                 onChange={(e) => {
                   const value = e.target.value;
+                  setDateInputValue(value);
                   
-                  // Allow any input while typing
-                  if (value === '') {
-                    setFormData(prev => ({ ...prev, date: new Date() }));
-                    return;
-                  }
-                  
-                  // Only validate and update if it looks like a complete date
-                  if (value.length === 10 && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                  // Validate and update date if it's a complete, valid date
+                  if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
                     const selectedDate = new Date(value);
                     if (!isNaN(selectedDate.getTime())) {
                       setFormData(prev => ({ ...prev, date: selectedDate }));
                     }
                   }
-                  // Allow partial typing without updating the date state
                 }}
                 onBlur={(e) => {
-                  // On blur, validate and correct if needed
                   const value = e.target.value;
-                  if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                  if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
                     const selectedDate = new Date(value);
                     if (!isNaN(selectedDate.getTime())) {
                       setFormData(prev => ({ ...prev, date: selectedDate }));
                     } else {
                       // Reset to current date if invalid
-                      e.target.value = format(formData.date, 'yyyy-MM-dd');
+                      const currentDateStr = format(formData.date, 'yyyy-MM-dd');
+                      setDateInputValue(currentDateStr);
                     }
                   } else if (value === '') {
-                    setFormData(prev => ({ ...prev, date: new Date() }));
+                    const newDate = new Date();
+                    setFormData(prev => ({ ...prev, date: newDate }));
+                    setDateInputValue(format(newDate, 'yyyy-MM-dd'));
                   } else {
                     // Reset to current date if invalid format
-                    e.target.value = format(formData.date, 'yyyy-MM-dd');
+                    const currentDateStr = format(formData.date, 'yyyy-MM-dd');
+                    setDateInputValue(currentDateStr);
                   }
                 }}
                 required
-                placeholder="YYYY-MM-DD (e.g., 2025-07-14)"
-                className="w-full"
+                placeholder="YYYY-MM-DD"
+                className="flex-1"
               />
               <input
                 type="date"
@@ -353,26 +359,28 @@ export default function CreatePostForm({ onPostCreated, editingPost, onCancelEdi
                 onChange={(e) => {
                   const selectedDate = e.target.value ? new Date(e.target.value) : new Date();
                   setFormData(prev => ({ ...prev, date: selectedDate }));
+                  setDateInputValue(format(selectedDate, 'yyyy-MM-dd'));
                 }}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                style={{ pointerEvents: 'none' }}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                title="Date picker"
               />
-              <div 
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600"
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => {
-                  const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement;
-                  if (dateInput) {
-                    dateInput.style.pointerEvents = 'auto';
-                    dateInput.showPicker?.();
-                    setTimeout(() => {
-                      dateInput.style.pointerEvents = 'none';
-                    }, 100);
-                  }
+                  const newDate = new Date();
+                  setFormData(prev => ({ ...prev, date: newDate }));
+                  setDateInputValue(format(newDate, 'yyyy-MM-dd'));
                 }}
+                className="px-3"
+                title="Set to today's date"
               >
-                📅
-              </div>
+                Today
+              </Button>
             </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Type the date in YYYY-MM-DD format or use the date picker
+            </p>
           </div>
 
           <div>

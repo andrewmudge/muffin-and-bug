@@ -41,17 +41,9 @@ export default function Header() {
             transition={{ delay: 0.4 }}
             className="text-lg sm:text-xl md:text-2xl text-purple-100 font-light italic mb-4 sm:mb-6 px-4"
           >
-            A diary of a girl dad raising two wonderful daughters with a wonderful wife
+            A diary of a girl dad raising two wonderful daughters with a wonderful&nbsp;wife
           </motion.p>
           
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
-            className="flex items-center justify-center gap-2 text-purple-200"
-          >
-            <span className="text-xs sm:text-sm text-center px-4">Capturing moments, creating memories</span>
-          </motion.div>
         </motion.div>
       </div>
     </motion.header>
