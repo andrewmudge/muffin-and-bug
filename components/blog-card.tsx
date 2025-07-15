@@ -6,7 +6,7 @@ import { Calendar, Tag, Star, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import PhotoCarousel from './photo-carousel';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import CreatePostForm from './create-post-form';
 
@@ -20,14 +20,28 @@ interface BlogCardProps {
 
 export default function BlogCard({ post, onEdit, isEditing, onCancelEdit, onPostUpdated }: BlogCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile on mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is md breakpoint in Tailwind
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Count words in content
   const wordCount = post.content.split(/\s+/).filter(word => word.length > 0).length;
-  const shouldShowExpandCollapse = wordCount > 150;
+  const wordLimit = isMobile ? 80 : 150;
+  const shouldShowExpandCollapse = wordCount > wordLimit;
 
   // Split content into words and create truncated version
   const words = post.content.split(/\s+/);
-  const truncatedContent = words.slice(0, 150).join(' ');
+  const truncatedContent = words.slice(0, wordLimit).join(' ');
   const displayedContent = isExpanded ? post.content : (shouldShowExpandCollapse ? truncatedContent + '...' : post.content);
 
   return (
@@ -138,7 +152,7 @@ export default function BlogCard({ post, onEdit, isEditing, onCancelEdit, onPost
               ))}
               {!isExpanded && shouldShowExpandCollapse && (
                 <div className="text-gray-400 text-sm italic">
-                  {wordCount - 150} more words
+                  {wordCount - wordLimit} more words
                 </div>
               )}
             </div>

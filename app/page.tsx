@@ -116,32 +116,8 @@ export default function Home() {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-white/20">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div className="flex-1">
+              <h2 className="text-xl font-semibold text-gray-800 mb-3">Search Blog Posts</h2>
               <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-            </div>
-            
-            {/* Admin Controls */}
-            <div className="flex items-center gap-2">
-              {isAdmin ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => signOut()}
-                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </motion.button>
-              ) : (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => signIn()}
-                  className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Admin
-                </motion.button>
-              )}
             </div>
           </div>
           
